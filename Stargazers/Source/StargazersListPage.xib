@@ -10,6 +10,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="StargazersListPage" customModule="Stargazers" customModuleProvider="target">
             <connections>
+                <outlet property="tableView" destination="70O-LG-5cJ" id="bEk-6X-Mql"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -18,18 +19,18 @@
             <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Stargazers!" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Zjl-vm-OW9">
-                    <rect key="frame" x="163.5" y="437.5" width="87" height="21"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                    <nil key="textColor"/>
-                    <nil key="highlightedColor"/>
-                </label>
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="70O-LG-5cJ">
+                    <rect key="frame" x="0.0" y="44" width="414" height="818"/>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                </tableView>
             </subviews>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
             <constraints>
-                <constraint firstItem="Zjl-vm-OW9" firstAttribute="centerY" secondItem="i5M-Pr-FkT" secondAttribute="centerY" id="h9D-b1-noa"/>
-                <constraint firstItem="Zjl-vm-OW9" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="mPr-pa-HEw"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" secondItem="70O-LG-5cJ" secondAttribute="trailing" id="3ak-9f-xMp"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="70O-LG-5cJ" secondAttribute="bottom" id="8sM-Oh-i5i"/>
+                <constraint firstItem="70O-LG-5cJ" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="Jvm-9S-4ps"/>
+                <constraint firstItem="70O-LG-5cJ" firstAttribute="leading" secondItem="fnl-2z-Ty3" secondAttribute="leading" id="mU3-yq-ZUN"/>
             </constraints>
             <point key="canvasLocation" x="120" y="132"/>
         </view>
