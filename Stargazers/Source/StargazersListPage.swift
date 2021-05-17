@@ -1,5 +1,11 @@
 import UIKit
 
+// https://developer.github.com/v3/activity/starring/#list-stargazers
+struct RequestModel: Equatable, Codable {
+    let owner: String
+    let repo: String
+}
+
 struct Stargazer {
     let name: String
 }
@@ -18,6 +24,11 @@ class StargazersListPage: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+    }
+    
+    func makeCall(request: RequestModel) {
+//        let urlRequest = URLRequest(url: URL(string: ""))
+//        let task = URLSession(configuration: .default).dataTask(with: <#T##URLRequest#>)
     }
 }
 
