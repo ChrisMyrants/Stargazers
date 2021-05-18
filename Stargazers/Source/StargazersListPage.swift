@@ -1,9 +1,17 @@
 import UIKit
 
-// https://developer.github.com/v3/activity/starring/#list-stargazers
-struct RequestModel: Equatable, Codable {
+struct RequestModel: Equatable, Encodable {
     let owner: String
     let repo: String
+}
+
+struct ResponseModel: Equatable, Decodable {
+    let login: String
+    let avatar_url: String
+    
+    func to() -> Stargazer {
+        Stargazer(name: login)
+    }
 }
 
 struct Stargazer {
@@ -18,17 +26,43 @@ class StargazersListPage: UIViewController {
         }
     }
     
-    let data: [Stargazer] = [
+    var data: [Stargazer] = [
         Stargazer(name: "Chris")
-    ]
+    ] {
+        didSet {
+            tableView.reloadData()
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        makeCall(request: RequestModel(
+                    owner: "ReactiveX",
+                    repo: "RxSwift"))
     }
     
     func makeCall(request: RequestModel) {
-//        let urlRequest = URLRequest(url: URL(string: ""))
-//        let task = URLSession(configuration: .default).dataTask(with: <#T##URLRequest#>)
+        let urlRequest = URLRequest(url: URL(string: "https://api.github.com/repos/\(request.owner)/\(request.repo)/stargazers")!)
+        
+        let dataTask =
+            URLSession(configuration: .default).dataTask(with: urlRequest) { [weak self] data, response, error in
+                print("Complete call with: \n- URL: \(urlRequest)\n- Data: \(data)\n- Response: \(response)\n- Error: \(error)")
+                
+                DispatchQueue.main.async {
+                    if let error = error {
+                        print("On failure with error: \(error)")
+                    } else if
+                        let data = data,
+                        let response = response as? HTTPURLResponse,
+                        response.statusCode == 200,
+                        let decoded = (try? JSONDecoder().decode([ResponseModel].self, from: data)) {
+                        print("On success with response: \(decoded)")
+                        self?.data = decoded.map { $0.to() }
+                    }
+                }
+            }
+        
+        dataTask.resume()
     }
 }
 
