@@ -20,15 +20,26 @@ struct Stargazer {
 
 class StargazersListPage: UIViewController {
 
+    @IBOutlet weak var userTextField: UITextField! {
+        didSet {
+            userTextField.delegate = self
+            userTextField.placeholder = "Username"
+        }
+    }
+    @IBOutlet weak var repositoryTextField: UITextField! {
+        didSet {
+            repositoryTextField.delegate = self
+            repositoryTextField.placeholder = "Repository"
+        }
+    }
+    
     @IBOutlet weak var tableView: UITableView! {
         didSet {
             tableView.dataSource = self
         }
     }
     
-    var data: [Stargazer] = [
-        Stargazer(name: "Chris")
-    ] {
+    var data: [Stargazer] = [] {
         didSet {
             tableView.reloadData()
         }
@@ -36,9 +47,6 @@ class StargazersListPage: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        makeCall(request: RequestModel(
-                    owner: "ReactiveX",
-                    repo: "RxSwift"))
     }
     
     func makeCall(request: RequestModel) {
@@ -76,5 +84,21 @@ extension StargazersListPage: UITableViewDataSource {
         cell.textLabel?.text = data[indexPath.row].name
         
         return cell
+    }
+}
+
+extension StargazersListPage: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        guard let username = userTextField.text,
+              let repository = repositoryTextField.text,
+              username.isEmpty.not,
+              repository.isEmpty.not else { return }
+        
+        makeCall(request: RequestModel(owner: username, repo: repository))
     }
 }

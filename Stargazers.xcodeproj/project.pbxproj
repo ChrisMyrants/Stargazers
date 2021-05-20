@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		832547372656CBE50097E079 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 832547362656CBE50097E079 /* Extensions.swift */; };
 		834D32042652F2C900858425 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 834D32032652F2C900858425 /* AppDelegate.swift */; };
 		834D32062652F2C900858425 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 834D32052652F2C900858425 /* SceneDelegate.swift */; };
 		834D320D2652F2CA00858425 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 834D320C2652F2CA00858425 /* Assets.xcassets */; };
@@ -35,6 +36,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		832547362656CBE50097E079 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		834D32002652F2C900858425 /* Stargazers.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Stargazers.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		834D32032652F2C900858425 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		834D32052652F2C900858425 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -76,6 +78,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		832547382656CE0E0097E079 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				832547362656CBE50097E079 /* Extensions.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
 		834D31F72652F2C900858425 = {
 			isa = PBXGroup;
 			children = (
@@ -128,6 +138,7 @@
 		834D32372652F5B200858425 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				832547382656CE0E0097E079 /* Utilities */,
 				834D32032652F2C900858425 /* AppDelegate.swift */,
 				834D32052652F2C900858425 /* SceneDelegate.swift */,
 				834D32332652F59E00858425 /* StargazersListPage.swift */,
@@ -269,6 +280,7 @@
 				834D32042652F2C900858425 /* AppDelegate.swift in Sources */,
 				834D32352652F59E00858425 /* StargazersListPage.swift in Sources */,
 				834D32062652F2C900858425 /* SceneDelegate.swift in Sources */,
+				832547372656CBE50097E079 /* Extensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
