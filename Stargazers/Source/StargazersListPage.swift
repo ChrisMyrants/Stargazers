@@ -56,16 +56,44 @@ class StargazersListPage: UIViewController {
             URLSession(configuration: .default).dataTask(with: urlRequest) { [weak self] data, response, error in
                 print("Complete call with: \n- URL: \(urlRequest)\n- Data: \(data)\n- Response: \(response)\n- Error: \(error)")
                 
-                DispatchQueue.main.async {
+                DispatchQueue.main.async { [weak self] in
+                    guard let self = self else { return }
+                    
+                    if response.flatMap(\.statusCode) == 200 || response.flatMap(\.statusCode) == 201 {
+                        guard
+                            let data = data,
+                            let response = response as? HTTPURLResponse,
+                            response.statusCode == 200,
+                            let decoded = (try? JSONDecoder().decode([ResponseModel].self, from: data)) else { return }
+                            
+                        print("On success with response: \(decoded)")
+                            self.data = decoded.map { $0.to() }
+                    } else {
+                        let alert = UIAlertController(
+                            title: "Errore",
+                                message: "HTTP Status code: \(response.flatMap(\.statusCode).get(or: -1))\nError: \(error)",
+                            preferredStyle: .alert)
+                        alert.addAction(UIAlertAction(title: "Ok", style: .cancel))
+                        self.present(alert,
+                                animated: true,
+                                completion: nil)
+                    }
+                    
                     if let error = error {
                         print("On failure with error: \(error)")
+                        self.present(UIAlertController(
+                                    title: "Errore",
+                                    message: "\(error)",
+                                    preferredStyle: .alert),
+                                animated: true,
+                                completion: nil)
                     } else if
                         let data = data,
                         let response = response as? HTTPURLResponse,
                         response.statusCode == 200,
                         let decoded = (try? JSONDecoder().decode([ResponseModel].self, from: data)) {
                         print("On success with response: \(decoded)")
-                        self?.data = decoded.map { $0.to() }
+                        self.data = decoded.map { $0.to() }
                     }
                 }
             }
