@@ -7,19 +7,20 @@ struct RequestModel: Equatable, Encodable {
 
 struct ResponseModel: Equatable, Decodable {
     let login: String
-    let avatar_url: String
+    let avatar_url: URL
     
     func to() -> Stargazer {
-        Stargazer(name: login)
+        Stargazer(name: login, avatarURL: avatar_url)
     }
 }
 
 struct Stargazer {
     let name: String
+    let avatarURL: URL
 }
 
 class StargazersListPage: UIViewController {
-
+    
     @IBOutlet weak var userTextField: UITextField! {
         didSet {
             userTextField.delegate = self
@@ -36,8 +37,15 @@ class StargazersListPage: UIViewController {
     @IBOutlet weak var tableView: UITableView! {
         didSet {
             tableView.dataSource = self
+            tableView.delegate = self
+            
+            tableView.register(
+                UINib(nibName: "\(StargazerTableViewCell.self)", bundle: nil),
+                forCellReuseIdentifier: StargazerTableViewCell.reusableIdentifier)
         }
     }
+    
+    let loader = ImageLoader()
     
     var data: [Stargazer] = [] {
         didSet {
@@ -65,28 +73,28 @@ class StargazersListPage: UIViewController {
                             let response = response as? HTTPURLResponse,
                             response.statusCode == 200,
                             let decoded = (try? JSONDecoder().decode([ResponseModel].self, from: data)) else { return }
-                            
+                        
                         print("On success with response: \(decoded)")
-                            self.data = decoded.map { $0.to() }
+                        self.data = decoded.map { $0.to() }
                     } else {
                         let alert = UIAlertController(
                             title: "Errore",
-                                message: "HTTP Status code: \(response.flatMap(\.statusCode).get(or: -1))\nError: \(error)",
+                            message: "HTTP Status code: \(response.flatMap(\.statusCode).get(or: -1))\nError: \(error)",
                             preferredStyle: .alert)
                         alert.addAction(UIAlertAction(title: "Ok", style: .cancel))
                         self.present(alert,
-                                animated: true,
-                                completion: nil)
+                                     animated: true,
+                                     completion: nil)
                     }
                     
                     if let error = error {
                         print("On failure with error: \(error)")
                         self.present(UIAlertController(
-                                    title: "Errore",
-                                    message: "\(error)",
-                                    preferredStyle: .alert),
-                                animated: true,
-                                completion: nil)
+                                        title: "Errore",
+                                        message: "\(error)",
+                                        preferredStyle: .alert),
+                                     animated: true,
+                                     completion: nil)
                     } else if
                         let data = data,
                         let response = response as? HTTPURLResponse,
@@ -108,10 +116,29 @@ extension StargazersListPage: UITableViewDataSource {
     }
     
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = UITableViewCell()
-        cell.textLabel?.text = data[indexPath.row].name
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: StargazerTableViewCell.reusableIdentifier, for: indexPath) as? StargazerTableViewCell else {
+            fatalError("")
+        }
+        
+        cell.usernameLabel.text = data[indexPath.row].name
+        let uuid = loader.loadImage(data[indexPath.row].avatarURL) { result in
+            DispatchQueue.main.async {
+                cell.avatarImage.image = result.tryGet
+            }
+        }
+        cell.onReuse = {
+            if let uuid = uuid {
+                self.loader.cancelLoad(uuid)
+            }
+        }
         
         return cell
+    }
+}
+
+extension StargazersListPage: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        56
     }
 }
 

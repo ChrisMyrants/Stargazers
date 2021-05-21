@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 
 extension Bool {
     var not: Bool {
@@ -16,5 +17,18 @@ extension Optional {
 extension URLResponse {
     var statusCode: Int? {
         (self as? HTTPURLResponse).map(\.statusCode)
+    }
+}
+
+extension String: Error {}
+
+extension Result {
+    var tryGet: Success? {
+        switch self {
+        case let .success(value):
+            return value
+        case .failure:
+            return nil
+        }
     }
 }
