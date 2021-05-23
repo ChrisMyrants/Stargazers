@@ -1,12 +1,7 @@
 import UIKit
 
-protocol StargazersListDelegate: AnyObject {
-    func newList(owner: String, repo: String)
-    func nextPage(owner: String, repo: String, currentViewState: StargazersListViewState)
-}
-
 class StargazersListPage: UIViewController {
-    
+    // MARK: IBOutlets
     @IBOutlet weak var userTextField: UITextField! {
         didSet {
             userTextField.delegate = self
@@ -31,9 +26,11 @@ class StargazersListPage: UIViewController {
         }
     }
     
+    // MARK: Public properties
     weak var delegate: StargazersListDelegate?
     
-    let loader = ImageLoader()
+    // MARK: Private properties
+    private let loader = ImageLoader()
 
     private var isLoading: Bool = false
     
@@ -45,21 +42,34 @@ class StargazersListPage: UIViewController {
         }
     }
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
+    // MARK: Public methods
+    func update(_ viewState: StargazersListViewState) {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.currentViewState = viewState
+            
+            if let failureMessage = viewState.failureMessage {
+                let alertController = UIAlertController(title: "Error", message: failureMessage, preferredStyle: .alert)
+                alertController.addAction(UIAlertAction(title: "Ok", style: .cancel))
+                self.present(alertController, animated: true)
+            }
+        }
     }
     
-    func update(_ viewState: StargazersListViewState) {
-        currentViewState = viewState
+    // MARK: Private methods
+    func makeSpinnerFooter() -> UIView {
+        let footerView = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: 100))
+        let spinner = UIActivityIndicatorView()
         
-        if let failureMessage = viewState.failureMessage {
-            let alertController = UIAlertController(title: "Error", message: failureMessage, preferredStyle: .alert)
-            alertController.addAction(UIAlertAction(title: "Ok", style: .cancel))
-            present(alertController, animated: true)
-        }
+        footerView.addSubview(spinner)
+        spinner.center = footerView.center
+        spinner.startAnimating()
+        
+        return footerView
     }
 }
 
+// MARK: UITableViewDataSource
 extension StargazersListPage: UITableViewDataSource {
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return currentViewState.stargazers.count
@@ -86,6 +96,7 @@ extension StargazersListPage: UITableViewDataSource {
     }
 }
 
+// MARK: UITableViewDelegate
 extension StargazersListPage: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         56
@@ -100,13 +111,14 @@ extension StargazersListPage: UITableViewDelegate {
         
         let position = scrollView.contentOffset.y
         if position > (tableView.contentSize.height - scrollView.frame.height - 100) {
-            delegate?.nextPage(owner: username, repo: repository, currentViewState: currentViewState)
+            delegate?.askNextPage(owner: username, repo: repository, currentViewState: currentViewState)
             tableView.tableFooterView = makeSpinnerFooter()
             isLoading = true
         }
     }
 }
 
+// MARK: UITextFieldDelegate
 extension StargazersListPage: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
@@ -119,19 +131,6 @@ extension StargazersListPage: UITextFieldDelegate {
               username.isEmpty.not,
               repository.isEmpty.not else { return }
         
-        delegate?.newList(owner: username, repo: repository)
-    }
-}
-
-fileprivate extension StargazersListPage {
-    func makeSpinnerFooter() -> UIView {
-        let footerView = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: 100))
-        let spinner = UIActivityIndicatorView()
-        
-        footerView.addSubview(spinner)
-        spinner.center = footerView.center
-        spinner.startAnimating()
-        
-        return footerView
+        delegate?.askStargazersList(owner: username, repo: repository)
     }
 }

@@ -1,11 +1,5 @@
 import Foundation
 
-enum ClientError: Error {
-    case httpError(code: Int, message: String?)
-    case decodingFailure
-    case unknown
-}
-
 class NetworkManager {
     func askStargazersList(requestModel: RequestModel, _ completionHandler: @escaping (Result<[ResponseModel],ClientError>) -> ()) {
         var urlString = "https://api.github.com/repos/"
