@@ -3,6 +3,7 @@ import Foundation
 struct RequestModel: Equatable, Encodable {
     let owner: String
     let repo: String
+    let page: Int
 }
 
 struct ResponseModel: Equatable, Decodable {

@@ -1,7 +1,8 @@
 import UIKit
 
 protocol StargazersListDelegate: AnyObject {
-    func send(owner: String, repo: String)
+    func newList(owner: String, repo: String)
+    func nextPage(owner: String, repo: String, currentViewState: StargazersListViewState)
 }
 
 class StargazersListPage: UIViewController {
@@ -33,10 +34,15 @@ class StargazersListPage: UIViewController {
     weak var delegate: StargazersListDelegate?
     
     let loader = ImageLoader()
+
+    private var isLoading: Bool = false
     
-    var data: [StargazersListViewState.Stargazer] = [] {
+    private var currentViewState: StargazersListViewState = .starting {
         didSet {
+            guard (oldValue.stargazers == currentViewState.stargazers).not else { return }
             tableView.reloadData()
+            tableView.tableFooterView = nil
+            isLoading = false
         }
     }
     
@@ -45,7 +51,7 @@ class StargazersListPage: UIViewController {
     }
     
     func update(_ viewState: StargazersListViewState) {
-        data = viewState.stargazers
+        currentViewState = viewState
         
         if let failureMessage = viewState.failureMessage {
             let alertController = UIAlertController(title: "Error", message: failureMessage, preferredStyle: .alert)
@@ -57,7 +63,7 @@ class StargazersListPage: UIViewController {
 
 extension StargazersListPage: UITableViewDataSource {
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return data.count
+        return currentViewState.stargazers.count
     }
     
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -65,8 +71,8 @@ extension StargazersListPage: UITableViewDataSource {
             fatalError("")
         }
         
-        cell.usernameLabel.text = data[indexPath.row].name
-        let uuid = loader.loadImage(data[indexPath.row].avatarURL) { result in
+        cell.usernameLabel.text = currentViewState.stargazers[indexPath.row].name
+        let uuid = loader.loadImage(currentViewState.stargazers[indexPath.row].avatarURL) { result in
             DispatchQueue.main.async {
                 cell.avatarImage.image = result.tryGet
             }
@@ -85,6 +91,17 @@ extension StargazersListPage: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         56
     }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        guard isLoading.not, let username = userTextField.text, let repository = repositoryTextField.text else { return }
+        
+        let position = scrollView.contentOffset.y
+        if position > (tableView.contentSize.height - scrollView.frame.height - 100) {
+            delegate?.nextPage(owner: username, repo: repository, currentViewState: currentViewState)
+            tableView.tableFooterView = makeSpinnerFooter()
+            isLoading = true
+        }
+    }
 }
 
 extension StargazersListPage: UITextFieldDelegate {
@@ -99,7 +116,19 @@ extension StargazersListPage: UITextFieldDelegate {
               username.isEmpty.not,
               repository.isEmpty.not else { return }
         
-        delegate?.send(owner: username, repo: repository)
-//        makeCall(request: RequestModel(owner: username, repo: repository))
+        delegate?.newList(owner: username, repo: repository)
+    }
+}
+
+fileprivate extension StargazersListPage {
+    func makeSpinnerFooter() -> UIView {
+        let footerView = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: 100))
+        let spinner = UIActivityIndicatorView()
+        
+        footerView.addSubview(spinner)
+        spinner.center = footerView.center
+        spinner.startAnimating()
+        
+        return footerView
     }
 }

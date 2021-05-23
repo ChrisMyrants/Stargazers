@@ -8,7 +8,13 @@ enum ClientError: Error {
 
 class NetworkManager {
     func askStargazersList(requestModel: RequestModel, _ completionHandler: @escaping (Result<[ResponseModel],ClientError>) -> ()) {
-        let urlRequest = URLRequest(url: URL(string: "https://api.github.com/repos/\(requestModel.owner)/\(requestModel.repo)/stargazers")!)
+        var urlString = "https://api.github.com/repos/"
+        let path = "\(requestModel.owner)/\(requestModel.repo)/stargazers"
+        let query = "?page=\(requestModel.page)"
+        urlString.append(path)
+        urlString.append(query)
+        
+        let urlRequest = URLRequest(url: URL(string: urlString)!)
         
         let dataTask =
             URLSession(configuration: .default).dataTask(with: urlRequest) { optData, optResponse, optError in
