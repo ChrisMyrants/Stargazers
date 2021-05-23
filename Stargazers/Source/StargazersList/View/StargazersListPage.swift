@@ -1,22 +1,7 @@
 import UIKit
 
-struct RequestModel: Equatable, Encodable {
-    let owner: String
-    let repo: String
-}
-
-struct ResponseModel: Equatable, Decodable {
-    let login: String
-    let avatar_url: URL
-    
-    func to() -> Stargazer {
-        Stargazer(name: login, avatarURL: avatar_url)
-    }
-}
-
-struct Stargazer {
-    let name: String
-    let avatarURL: URL
+protocol StargazersListDelegate: AnyObject {
+    func send(owner: String, repo: String)
 }
 
 class StargazersListPage: UIViewController {
@@ -45,9 +30,11 @@ class StargazersListPage: UIViewController {
         }
     }
     
+    weak var delegate: StargazersListDelegate?
+    
     let loader = ImageLoader()
     
-    var data: [Stargazer] = [] {
+    var data: [StargazersListViewState.Stargazer] = [] {
         didSet {
             tableView.reloadData()
         }
@@ -57,56 +44,14 @@ class StargazersListPage: UIViewController {
         super.viewDidLoad()
     }
     
-    func makeCall(request: RequestModel) {
-        let urlRequest = URLRequest(url: URL(string: "https://api.github.com/repos/\(request.owner)/\(request.repo)/stargazers")!)
+    func update(_ viewState: StargazersListViewState) {
+        data = viewState.stargazers
         
-        let dataTask =
-            URLSession(configuration: .default).dataTask(with: urlRequest) { [weak self] data, response, error in
-                print("Complete call with: \n- URL: \(urlRequest)\n- Data: \(data)\n- Response: \(response)\n- Error: \(error)")
-                
-                DispatchQueue.main.async { [weak self] in
-                    guard let self = self else { return }
-                    
-                    if response.flatMap(\.statusCode) == 200 || response.flatMap(\.statusCode) == 201 {
-                        guard
-                            let data = data,
-                            let response = response as? HTTPURLResponse,
-                            response.statusCode == 200,
-                            let decoded = (try? JSONDecoder().decode([ResponseModel].self, from: data)) else { return }
-                        
-                        print("On success with response: \(decoded)")
-                        self.data = decoded.map { $0.to() }
-                    } else {
-                        let alert = UIAlertController(
-                            title: "Errore",
-                            message: "HTTP Status code: \(response.flatMap(\.statusCode).get(or: -1))\nError: \(error)",
-                            preferredStyle: .alert)
-                        alert.addAction(UIAlertAction(title: "Ok", style: .cancel))
-                        self.present(alert,
-                                     animated: true,
-                                     completion: nil)
-                    }
-                    
-                    if let error = error {
-                        print("On failure with error: \(error)")
-                        self.present(UIAlertController(
-                                        title: "Errore",
-                                        message: "\(error)",
-                                        preferredStyle: .alert),
-                                     animated: true,
-                                     completion: nil)
-                    } else if
-                        let data = data,
-                        let response = response as? HTTPURLResponse,
-                        response.statusCode == 200,
-                        let decoded = (try? JSONDecoder().decode([ResponseModel].self, from: data)) {
-                        print("On success with response: \(decoded)")
-                        self.data = decoded.map { $0.to() }
-                    }
-                }
-            }
-        
-        dataTask.resume()
+        if let failureMessage = viewState.failureMessage {
+            let alertController = UIAlertController(title: "Error", message: failureMessage, preferredStyle: .alert)
+            alertController.addAction(UIAlertAction(title: "Ok", style: .cancel))
+            present(alertController, animated: true)
+        }
     }
 }
 
@@ -154,6 +99,7 @@ extension StargazersListPage: UITextFieldDelegate {
               username.isEmpty.not,
               repository.isEmpty.not else { return }
         
-        makeCall(request: RequestModel(owner: username, repo: repository))
+        delegate?.send(owner: username, repo: repository)
+//        makeCall(request: RequestModel(owner: username, repo: repository))
     }
 }
