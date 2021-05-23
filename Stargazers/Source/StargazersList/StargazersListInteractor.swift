@@ -18,13 +18,32 @@ class StargazersListInteractor {
             DispatchQueue.main.async {
                 switch result {
                 case let .success(response):
-                    self.page?.update(StargazersListViewState(stargazers: response.map { $0.to() }, page: 1, failureMessage: nil))
+                    self.page?.update(StargazersListViewState(
+                                        stargazers: response.map { $0.to() },
+                                        page: 1,
+                                        isLastPage: response.isEmpty,
+                                        failureMessage: nil))
+                    
                 case let .failure(.httpError(code: code, message: message)):
-                    self.page?.update(StargazersListViewState(stargazers: [], page: 0, failureMessage: "HTTP error code: \(code)\n\(message.get(or: ""))"))
+                    self.page?.update(StargazersListViewState(
+                                        stargazers: [],
+                                        page: 0,
+                                        isLastPage: false,
+                                        failureMessage: "HTTP error code: \(code)\n\(message.get(or: ""))"))
+                    
                 case .failure(.decodingFailure):
-                    self.page?.update(StargazersListViewState(stargazers: [], page: 0, failureMessage: "Failure on response decode"))
+                    self.page?.update(StargazersListViewState(
+                                        stargazers: [],
+                                        page: 0,
+                                        isLastPage: false,
+                                        failureMessage: "Failure on response decode"))
+                    
                 case .failure(.unknown):
-                    self.page?.update(StargazersListViewState(stargazers: [], page: 0, failureMessage: "Generic error"))
+                    self.page?.update(StargazersListViewState(
+                                        stargazers: [],
+                                        page: 0,
+                                        isLastPage: false,
+                                        failureMessage: "Generic error"))
                 }
             }
         }
@@ -40,13 +59,32 @@ class StargazersListInteractor {
             DispatchQueue.main.async {
                 switch result {
                 case let .success(response):
-                    self.page?.update(StargazersListViewState(stargazers: currentViewState.stargazers + response.map { $0.to() }, page: nextPage, failureMessage: nil))
+                    self.page?.update(StargazersListViewState(
+                                        stargazers: currentViewState.stargazers + response.map { $0.to() },
+                                        page: nextPage,
+                                        isLastPage: response.isEmpty,
+                                        failureMessage: nil))
+               
                 case let .failure(.httpError(code: code, message: message)):
-                    self.page?.update(StargazersListViewState(stargazers: currentViewState.stargazers, page: currentViewState.page, failureMessage: "HTTP error code: \(code)\n\(message.get(or: ""))"))
+                    self.page?.update(StargazersListViewState(
+                                        stargazers: currentViewState.stargazers,
+                                        page: currentViewState.page,
+                                        isLastPage: currentViewState.isLastPage,
+                                        failureMessage: "HTTP error code: \(code)\n\(message.get(or: ""))"))
+               
                 case .failure(.decodingFailure):
-                    self.page?.update(StargazersListViewState(stargazers: currentViewState.stargazers, page: currentViewState.page, failureMessage: "Failure on response decode"))
+                    self.page?.update(StargazersListViewState(
+                                        stargazers: currentViewState.stargazers,
+                                        page: currentViewState.page,
+                                        isLastPage: currentViewState.isLastPage,
+                                        failureMessage: "Failure on response decode"))
+                
                 case .failure(.unknown):
-                    self.page?.update(StargazersListViewState(stargazers: currentViewState.stargazers, page: currentViewState.page, failureMessage: "Generic error"))
+                    self.page?.update(StargazersListViewState(
+                                        stargazers: currentViewState.stargazers,
+                                        page: currentViewState.page,
+                                        isLastPage: currentViewState.isLastPage,
+                                        failureMessage: "Generic error"))
                 }
             }
         }

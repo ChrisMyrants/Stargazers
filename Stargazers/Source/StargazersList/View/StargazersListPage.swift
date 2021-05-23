@@ -39,7 +39,6 @@ class StargazersListPage: UIViewController {
     
     private var currentViewState: StargazersListViewState = .starting {
         didSet {
-            guard (oldValue.stargazers == currentViewState.stargazers).not else { return }
             tableView.reloadData()
             tableView.tableFooterView = nil
             isLoading = false
@@ -93,7 +92,11 @@ extension StargazersListPage: UITableViewDelegate {
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        guard isLoading.not, let username = userTextField.text, let repository = repositoryTextField.text else { return }
+        guard
+            isLoading.not,
+            currentViewState.isLastPage.not,
+            let username = userTextField.text,
+            let repository = repositoryTextField.text else { return }
         
         let position = scrollView.contentOffset.y
         if position > (tableView.contentSize.height - scrollView.frame.height - 100) {

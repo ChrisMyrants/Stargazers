@@ -3,6 +3,7 @@ import Foundation
 struct StargazersListViewState {
     let stargazers: [Stargazer]
     let page: Int
+    let isLastPage: Bool
     let failureMessage: String?
     
     struct Stargazer: Equatable {
@@ -11,6 +12,6 @@ struct StargazersListViewState {
     }
     
     static var starting: StargazersListViewState {
-        StargazersListViewState(stargazers: [], page: 0, failureMessage: nil)
+        StargazersListViewState(stargazers: [], page: 0, isLastPage: false, failureMessage: nil)
     }
 }
