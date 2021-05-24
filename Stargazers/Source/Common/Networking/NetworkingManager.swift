@@ -1,9 +1,14 @@
 import Foundation
 
 class NetworkManager {
+    private let gitHubRoot = "https://api.github.com"
+}
+
+// MARK: StargazersListNetwork
+extension NetworkManager: StargazersListNetworkType {
     func askStargazersList(requestModel: RequestModel, _ completionHandler: @escaping (Result<[ResponseModel],ClientError>) -> ()) {
-        var urlString = "https://api.github.com/repos/"
-        let path = "\(requestModel.owner)/\(requestModel.repo)/stargazers"
+        var urlString = gitHubRoot
+        let path = "/repos/\(requestModel.owner)/\(requestModel.repo)/stargazers"
         let query = "?page=\(requestModel.page)"
         urlString.append(path)
         urlString.append(query)

@@ -2,13 +2,13 @@ import Foundation
 
 class StargazersListInteractor {
     // MARK: Public properties
-    weak var page: StargazersListPage?
+    weak var page: StargazersListPageType?
     
     // MARK: Private properties
-    private let networkManager: NetworkManager
+    private let networkManager: StargazersListNetworkType
     
     // MARK: Public methods
-    init(networkManager: NetworkManager, page: StargazersListPage?) {
+    init(networkManager: StargazersListNetworkType, page: StargazersListPage?) {
         self.networkManager = networkManager
         self.page = page
         self.page?.delegate = self
@@ -29,27 +29,13 @@ extension StargazersListInteractor: StargazersListDelegate {
                                     page: 1,
                                     isLastPage: response.isEmpty,
                                     failureMessage: nil))
-                
-            case let .failure(.httpError(code: code, message: message)):
+            
+            case let .failure(error):
                 self.page?.update(StargazersListViewState(
                                     stargazers: [],
                                     page: 0,
                                     isLastPage: false,
-                                    failureMessage: "HTTP error code: \(code)\n\(message.get(or: ""))"))
-                
-            case .failure(.decodingFailure):
-                self.page?.update(StargazersListViewState(
-                                    stargazers: [],
-                                    page: 0,
-                                    isLastPage: false,
-                                    failureMessage: "Failure on response decode"))
-                
-            case .failure(.unknown):
-                self.page?.update(StargazersListViewState(
-                                    stargazers: [],
-                                    page: 0,
-                                    isLastPage: false,
-                                    failureMessage: "Generic error"))
+                                    failureMessage: error.description))
             }
         }
     }
@@ -68,27 +54,13 @@ extension StargazersListInteractor: StargazersListDelegate {
                                     page: nextPage,
                                     isLastPage: response.isEmpty,
                                     failureMessage: nil))
-                
-            case let .failure(.httpError(code: code, message: message)):
+            
+            case let .failure(error):
                 self.page?.update(StargazersListViewState(
                                     stargazers: currentViewState.stargazers,
                                     page: currentViewState.page,
                                     isLastPage: currentViewState.isLastPage,
-                                    failureMessage: "HTTP error code: \(code)\n\(message.get(or: ""))"))
-                
-            case .failure(.decodingFailure):
-                self.page?.update(StargazersListViewState(
-                                    stargazers: currentViewState.stargazers,
-                                    page: currentViewState.page,
-                                    isLastPage: currentViewState.isLastPage,
-                                    failureMessage: "Failure on response decode"))
-                
-            case .failure(.unknown):
-                self.page?.update(StargazersListViewState(
-                                    stargazers: currentViewState.stargazers,
-                                    page: currentViewState.page,
-                                    isLastPage: currentViewState.isLastPage,
-                                    failureMessage: "Generic error"))
+                                    failureMessage: error.description))
             }
         }
     }

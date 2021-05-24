@@ -42,7 +42,21 @@ class StargazersListPage: UIViewController {
         }
     }
     
-    // MARK: Public methods
+    // MARK: Private methods
+    func makeSpinnerFooter() -> UIView {
+        let footerView = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: 100))
+        let spinner = UIActivityIndicatorView()
+        
+        footerView.addSubview(spinner)
+        spinner.center = footerView.center
+        spinner.startAnimating()
+        
+        return footerView
+    }
+}
+
+// MARK: StargazersListPageType
+extension StargazersListPage: StargazersListPageType {
     func update(_ viewState: StargazersListViewState) {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
@@ -54,18 +68,6 @@ class StargazersListPage: UIViewController {
                 self.present(alertController, animated: true)
             }
         }
-    }
-    
-    // MARK: Private methods
-    func makeSpinnerFooter() -> UIView {
-        let footerView = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: 100))
-        let spinner = UIActivityIndicatorView()
-        
-        footerView.addSubview(spinner)
-        spinner.center = footerView.center
-        spinner.startAnimating()
-        
-        return footerView
     }
 }
 
