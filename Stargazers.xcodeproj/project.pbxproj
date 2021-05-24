@@ -97,7 +97,6 @@
 			isa = PBXGroup;
 			children = (
 				832547362656CBE50097E079 /* Extensions.swift */,
-				83C3CE742658157300340882 /* ImageLoader.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -220,6 +219,7 @@
 			isa = PBXGroup;
 			children = (
 				83AFE1BC265ABC800061CB5C /* ClientError.swift */,
+				83C3CE742658157300340882 /* ImageLoader.swift */,
 				83A2CC252658FB6100B3C249 /* NetworkingManager.swift */,
 			);
 			path = Networking;

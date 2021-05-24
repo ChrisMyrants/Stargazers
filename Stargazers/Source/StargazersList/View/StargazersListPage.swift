@@ -43,7 +43,7 @@ class StargazersListPage: UIViewController {
     }
     
     // MARK: Private methods
-    func makeSpinnerFooter() -> UIView {
+    fileprivate func makeSpinnerFooter() -> UIView {
         let footerView = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.size.width, height: 100))
         let spinner = UIActivityIndicatorView()
         
