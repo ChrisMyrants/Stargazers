@@ -32,7 +32,7 @@ final class ExtensionsTests: XCTestCase {
         /// --------------------------------
     }
     
-    func testOptional_GetMethod_GetWrappedValueOnSome() {
+    func testOptionalExtension_GetMethod_GetWrappedValueOnSome() {
         
         /// GIVEN: an optional variable with some wrapped value inside
         let expectedValue = "TEST"
@@ -49,7 +49,7 @@ final class ExtensionsTests: XCTestCase {
         /// --------------------------------
     }
     
-    func testOptional_GetMethod_GetOrValueOnNone() {
+    func testOptionalExtension_GetMethod_GetOrValueOnNone() {
         
         /// GIVEN: an optional variable with none value inside
         let expectedValue = "TEST"
@@ -62,6 +62,39 @@ final class ExtensionsTests: XCTestCase {
         
         /// THEN: the output is the or value
         XCTAssertEqual(sut, expectedValue)
+        /// --------------------------------
+    }
+    
+    func testResultExtension_TryGetProperty_GetValueOnSuccess() {
+        
+        /// GIVEN: a successful result variable with a value
+        let expectedValue = "TEST"
+        let originalValue: Result<String,String> = .success(expectedValue)
+        /// --------------------------------
+        
+        /// WHEN: .tryGet property is called
+        let sut = originalValue.tryGet
+        /// --------------------------------
+        
+        /// THEN: the output is the original value
+        XCTAssertNotNil(sut)
+        XCTAssertEqual(sut, expectedValue)
+        /// --------------------------------
+    }
+    
+    func testResultExtension_TryGetProperty_GetNoneOnFailure() {
+        
+        /// GIVEN: a failure result variable with any value
+        let failureValue = "not used"
+        let originalValue: Result<String,String> = .failure(failureValue)
+        /// --------------------------------
+        
+        /// WHEN: .tryGet property is called
+        let sut = originalValue.tryGet
+        /// --------------------------------
+        
+        /// THEN: the output is none
+        XCTAssertNil(sut)
         /// --------------------------------
     }
 }
