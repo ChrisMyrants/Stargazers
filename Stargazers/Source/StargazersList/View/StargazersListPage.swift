@@ -101,7 +101,7 @@ extension StargazersListPage: UITableViewDataSource {
 // MARK: UITableViewDelegate
 extension StargazersListPage: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        56
+        StargazerTableViewCell.height
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
