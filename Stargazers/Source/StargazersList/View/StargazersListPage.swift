@@ -106,6 +106,7 @@ extension StargazersListPage: UITableViewDelegate {
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         guard
+            currentViewState.stargazers.isEmpty.not,
             isLoading.not,
             currentViewState.isLastPage.not,
             let username = userTextField.text,
