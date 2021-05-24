@@ -8,9 +8,14 @@ struct RequestModel: Equatable, Encodable {
 
 struct ResponseModel: Equatable, Decodable {
     let login: String
-    let avatar_url: URL
+    let avatarURL: URL
+    
+    private enum CodingKeys: String, CodingKey {
+        case login
+        case avatarURL = "avatar_url"
+    }
     
     func to() -> StargazersListViewState.Stargazer {
-        StargazersListViewState.Stargazer(name: login, avatarURL: avatar_url)
+        StargazersListViewState.Stargazer(name: login, avatarURL: avatarURL)
     }
 }
