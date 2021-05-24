@@ -1,5 +1,3 @@
-import Foundation
-
 class StargazersListInteractor {
     // MARK: Private properties
     private weak var networkManager: StargazersListNetworkType?

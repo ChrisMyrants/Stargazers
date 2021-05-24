@@ -40,7 +40,7 @@ final class StargazersListInteractorTests: XCTestCase {
         
         /// GIVEN: network response is successful
         let responseModel: [ResponseModel] = [
-            .init(login: "name_1", avatar_url: URL(string: "https://www.nba.com")!)
+            .init(login: "name_1", avatarURL: URL(string: "https://www.nba.com")!)
         ]
         let expectedViewState = StargazersListViewState(
             stargazers: responseModel.map { $0.to() },
@@ -122,7 +122,7 @@ final class StargazersListInteractorTests: XCTestCase {
             isLastPage: false,
             failureMessage: nil)
         let responseModel: [ResponseModel] = [
-            .init(login: "name_1", avatar_url: URL(string: "https://www.nba.com")!)
+            .init(login: "name_1", avatarURL: URL(string: "https://www.nba.com")!)
         ]
         let expectedViewState = StargazersListViewState(
             stargazers: currentViewState.stargazers + responseModel.map { $0.to() },
