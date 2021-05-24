@@ -1,10 +1,12 @@
 import UIKit
 
 class ImageLoader {
+    // MARK: Private properties
     private var loadedImages: [URL:UIImage] = [:]
     private var runningRequests: [UUID:URLSessionDataTask] = [:]
     
-    func loadImage(_ url: URL, _ completion: @escaping (Result<UIImage, Error>) -> Void) -> UUID? {
+    // MARK: Public methods
+    func loadImage(_ url: URL, _ completion: @escaping (Result<UIImage, ClientError>) -> Void) -> UUID? {
         
         if let image = loadedImages[url] {
             completion(.success(image))
@@ -13,7 +15,7 @@ class ImageLoader {
         
         let uuid = UUID()
         
-        let task = URLSession.shared.dataTask(with: url) { data, _, error in
+        let task = URLSession.shared.dataTask(with: url) { data, response, error in
             defer {
                 self.runningRequests.removeValue(forKey: uuid)
             }
@@ -25,12 +27,17 @@ class ImageLoader {
             }
             
             guard let error = error else {
-                completion(.failure("Unknown error"))
+                completion(.failure(.unknown))
                 return
             }
             
             guard (error as NSError).code == NSURLErrorCancelled else {
-                completion(.failure(error))
+                let clientError = response
+                    .flatMap(\.statusCode)
+                    .map { ClientError.httpError(code: $0, message: error.localizedDescription) }
+                    .get(or: .unknown)
+                
+                completion(.failure(clientError))
                 return
             }
         }
