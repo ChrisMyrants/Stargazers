@@ -1,14 +1,12 @@
 import Foundation
 
 class StargazersListInteractor {
-    // MARK: Public properties
-    weak var page: StargazersListPageType?
-    
     // MARK: Private properties
-    private let networkManager: StargazersListNetworkType
+    private weak var networkManager: StargazersListNetworkType?
+    private weak var page: StargazersListPageType?
     
     // MARK: Public methods
-    init(networkManager: StargazersListNetworkType, page: StargazersListPage?) {
+    init(networkManager: StargazersListNetworkType, page: StargazersListPageType) {
         self.networkManager = networkManager
         self.page = page
         self.page?.delegate = self
@@ -19,7 +17,7 @@ class StargazersListInteractor {
 extension StargazersListInteractor: StargazersListDelegate {
     func askStargazersList(owner: String, repo: String) {
         let requestModel = RequestModel(owner: owner, repo: repo, page: 1)
-        networkManager.askStargazersList(requestModel: requestModel) { [weak self] result in
+        networkManager?.askStargazersList(requestModel: requestModel) { [weak self] result in
             guard let self = self else { return }
             
             switch result {
@@ -44,14 +42,14 @@ extension StargazersListInteractor: StargazersListDelegate {
         let nextPage = currentViewState.page + 1
         let requestModel = RequestModel(owner: owner, repo: repo, page: nextPage)
         
-        networkManager.askStargazersList(requestModel: requestModel) { [weak self] result in
+        networkManager?.askStargazersList(requestModel: requestModel) { [weak self] result in
             guard let self = self else { return }
             
             switch result {
             case let .success(response):
                 self.page?.update(StargazersListViewState(
                                     stargazers: currentViewState.stargazers + response.map { $0.to() },
-                                    page: nextPage,
+                                    page: response.isEmpty ? currentViewState.page : nextPage,
                                     isLastPage: response.isEmpty,
                                     failureMessage: nil))
             

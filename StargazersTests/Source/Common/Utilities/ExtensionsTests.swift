@@ -2,6 +2,7 @@ import XCTest
 @testable import Stargazers
 
 final class ExtensionsTests: XCTestCase {
+    // MARK: Bool Extensions
     func testBoolExtension_NotProperty_FromTrueToFalse() {
         
         /// GIVEN: a true boolean value
@@ -32,6 +33,7 @@ final class ExtensionsTests: XCTestCase {
         /// --------------------------------
     }
     
+    // MARK: Optional Extensions
     func testOptionalExtension_GetMethod_GetWrappedValueOnSome() {
         
         /// GIVEN: an optional variable with some wrapped value inside
@@ -65,6 +67,7 @@ final class ExtensionsTests: XCTestCase {
         /// --------------------------------
     }
     
+    // MARK: Result Extensions
     func testResultExtension_TryGetProperty_GetValueOnSuccess() {
         
         /// GIVEN: a successful result variable with a value

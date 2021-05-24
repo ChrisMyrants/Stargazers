@@ -1,6 +1,6 @@
 import Foundation
 
-struct StargazersListViewState {
+struct StargazersListViewState: Equatable {
     let stargazers: [Stargazer]
     let page: Int
     let isLastPage: Bool
